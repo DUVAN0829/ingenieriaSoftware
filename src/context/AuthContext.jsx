@@ -1,7 +1,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "firebase/auth"
-import { auth } from "../firebase";
+import { auth } from "../utils/firebase";
 
 //* onAuthStateChanged devuelve el estado de sesión del usuario, si se crea una cuenta, si inicia sesión, si se abandona la cuenta, etc.
 

@@ -5,7 +5,7 @@ const CuadroInfo = (prop) => {
     const { titulo, valor, valorDos, chart } = prop
 
     return (
-        <div className="w-2/4 h-90 rounded-lg shadow-xl">
+        <div className="w-2/4 h-90 rounded-lg shadow-xl bg-slate-50">
             <section className="mt-5 ml-7 my-4">
 
                 <h2 className="font-semibold text-xl text-gray-900">{titulo}</h2>

@@ -1,8 +1,9 @@
 import { useState } from "react"
-import { useAuth } from "../context/AuthContext"
-import { NavLink, useNavigate } from "react-router-dom"
+import { useAuth } from "../../context/AuthContext"
+import { useNavigate } from "react-router-dom"
+import { NavLink } from "react-router-dom"
 
-export default function Resgister() {
+export default function Login() {
 
     //*State user
     const [user, setUser] = useState({
@@ -11,7 +12,7 @@ export default function Resgister() {
     })
 
     //todo: State función crear usuario FireBase
-    const { singup } = useAuth()
+    const { login } = useAuth()
 
     //!State errores
     const [error, setError] = useState('')
@@ -33,19 +34,20 @@ export default function Resgister() {
 
         try {
 
-            await singup(user.email, user.password)
+            await login(user.email, user.password) //toda petición hacia un back es asincrona.
             navigate("/")
 
         } catch (error) {
 
             setError(error.message)
-            if (error.code === 'auth/invalid-email') {
-                setError('Correo electrónico necesario')
-            } else if (error.code === 'auth/missing-password') {
-                setError('Contraseña necesaria')
-            } else if (error.code === 'auth/email-already-in-use') {
-                setError('El usuario ya está en uso')
+            if (error.code === "auth/invalid-email") {
+                setError('Correo vacio o invalido')
+            } else if (error.code === "auth/missing-password") {
+                setError('Contraseña vacia o invalida')
+            } else if (error.code === 'auth/invalid-credential') {
+                setError('El usuario ingresado no existe')
             }
+            console.log(error.message)
 
         }
 
@@ -56,7 +58,7 @@ export default function Resgister() {
         <div className="flex justify-center items-center h-screen">
 
             <section>
-                <h1 className="font-extrabold text-center text-2xl">Registrarse</h1>
+                <h1 className="font-extrabold text-center text-2xl">Iniciar Sesión</h1>
 
                 <form
                     className="border-gray-500 p-8 bg-opacity-20 flex flex-col gap-y-4 rounded-lg mt-5 mb-14 shadow-xl"
@@ -91,7 +93,7 @@ export default function Resgister() {
                         type="submit"
                         value="Login" />
 
-                    <NavLink to={'/login'} className="font-medium text-blue-600 hover:text-blue-800 transition-all ease-in duration-200">Iniciar sesión</NavLink>
+                    <NavLink to={'/register'} className="font-medium text-blue-600 hover:text-blue-800 transition-all ease-in duration-200">Registrarse</NavLink>
 
                 </form>
 
