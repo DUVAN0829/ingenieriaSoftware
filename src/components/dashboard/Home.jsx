@@ -24,7 +24,7 @@ export default function Home() {
                 <div className="flex-1 flex flex-col">
 
                     <main>
-                        <h2 className="text-2xl font-extrabold mt-4 ml-4 text-gray-900">Dashboard</h2>
+                        <h1 className="text-2xl font-extrabold mt-4 ml-4 text-gray-900">Dashboard</h1>
 
                         {/* //todo: Banners de información general. */}
                         <section className="flex justify-between mx-4 gap-x-8 mt-7">

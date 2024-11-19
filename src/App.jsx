@@ -5,9 +5,9 @@ import Login from "./components/autenticacion/Login"
 import Resgister from "./components/autenticacion/Resgister"
 import { AuthProvider } from "./context/AuthContext"
 import ProtectedRoute from "./components/navegacion/ProtectedRoute"
-import Inventario from "./components/Inventario/Inventario"
 import Historial from "./components/Historial/Historial"
 import Configuracion from "./components/Configuracion/Config"
+import Inventario from "./components/Inventario/Inventario"
 
 function App() {
 
@@ -24,7 +24,7 @@ function App() {
 
           <Route path="/login" element={<Login />} />
 
-          <Route path="/inventario" element={<Inventario />} />
+          <Route path="/inventario" element={<Inventario/>} />
 
           <Route path="/historial" element={<Historial />} />
 
