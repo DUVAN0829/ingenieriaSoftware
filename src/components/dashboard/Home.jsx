@@ -3,6 +3,8 @@ import CuadroInfo from "./CuadroInfo"
 import Navegacion from "../navegacion/Navegacion"
 import UpVentas from "../Graficos/UpVentas"
 import LowerVentas from "../Graficos/LowerVentas"
+import IncomeVentas from "../Graficos/IncomeVentas"
+import TrendVentas from "../Graficos/TrendVentas"
 
 
 export default function Home() {
@@ -50,7 +52,21 @@ export default function Home() {
                             <section className="w-2/4">
                                 <LowerVentas />
                             </section>
+                            
                         </section>
+
+                        <section className="flex justify-between gap-x-8 mt-7 mx-4">
+                            <section className="w-2/4">
+                                <IncomeVentas />
+                            </section>
+
+                            <section className="w-2/4">
+                                <TrendVentas />
+                            </section>
+                            
+                        </section>
+
+                        
 
                     </main>
 
