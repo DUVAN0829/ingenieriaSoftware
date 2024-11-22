@@ -30,18 +30,18 @@ export default function Home() {
 
                         {/* //todo: Banners de información general. */}
                         <section className="flex justify-between mx-4 gap-x-8 mt-7">
-                            <CuadroInfo titulo={'Total vendido'} valor={1.234} valorDos={'5.7%'} chart={'up'} />
-                            <CuadroInfo titulo={'Ingresos'} valor={'$45.678'} valorDos={'3.2%'} chart={'up'} />
+                            <CuadroInfo titulo={'Total vendido'} valor={"1.400"} valorDos={'50%'} chart={'up'} />
+                            <CuadroInfo titulo={'Ingresos'} valor={'$52.000'} valorDos={'3.2%'} chart={'up'} />
                         </section>
 
                         <section className="flex justify-between mx-4 gap-x-8 mt-7">
-                            <CuadroInfo titulo={'Stock'} valor={567} valorDos={'2.1%'} />
+                            <CuadroInfo titulo={'Stock'} valor={1518} valorDos={'2.1%'} />
                             <CuadroInfo titulo={'Margen de beneficio'} valor={23} valorDos={'1.5%'} chart={'up'} />
                         </section>
 
                         {/* <section className="mx-3 mt-4">
                             <button onClick={hanldeLogout} className="bg-blue-950 text-white py-2 px-5 rounded-lg font-bold hover:bg-blue-900 transition-all delay-100">Salir</button>
-                        </section> */}
+                        </section>  */}
 
                         {/* //todo: Graficos. */}
                         <section className="flex justify-between gap-x-8 mt-7 mx-4">
@@ -65,8 +65,6 @@ export default function Home() {
                             </section>
                             
                         </section>
-
-                        
 
                     </main>
 

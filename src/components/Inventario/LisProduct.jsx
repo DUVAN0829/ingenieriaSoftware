@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useMemo } from 'react';
-import { RiArrowLeftSLine, RiArrowRightSLine, RiAddLine, RiCloseLine } from '@remixicon/react';
+import { useState, useEffect, useMemo } from 'react';
+import { RiArrowLeftSLine, RiArrowRightSLine, RiAddLine, RiCloseLine, RiEditLine } from '@remixicon/react';
 import {
   flexRender,
   getCoreRowModel,
@@ -29,150 +29,203 @@ function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-const initialWorkspaces = [
-  {
-    nombreProducto: 'Paracetamol 500mg',
-    marca: 'Farmacéutica XYZ',
-    estado: 'Disponible',
-    categoria: 'Medicamento',
-    stock: 250,
-    precio: '$5.50',
-    fechaCaducidad: '23/09/2025',
-  },
-  {
-    nombreProducto: 'Ibuprofeno 400mg',
-    marca: 'SaludPlus',
-    estado: 'Disponible',
-    categoria: 'Medicamento',
-    stock: 300,
-    precio: '$6.99',
-    fechaCaducidad: '22/09/2025',
-  },
-  {
-    nombreProducto: 'Aspirina 100mg',
-    marca: 'Medicor',
-    estado: 'Agotado',
-    categoria: 'Medicamento',
-    stock: 0,
-    precio: '$3.00',
-    fechaCaducidad: '20/09/2024',
-  },
-  {
-    nombreProducto: 'Gel Antibacterial 500ml',
-    marca: 'CleanHands',
-    estado: 'Disponible',
-    categoria: 'Cuidado Personal',
-    stock: 150,
-    precio: '$4.50',
-    fechaCaducidad: '21/09/2024',
-  },
-  {
-    nombreProducto: 'Vitamina C 1000mg',
-    marca: 'HealthyLife',
-    estado: 'Disponible',
-    categoria: 'Suplementos',
-    stock: 500,
-    precio: '$9.99',
-    fechaCaducidad: '26/09/2025',
-  },
-  // Nuevo producto agregado
-  {
-    nombreProducto: 'Mascarilla KN95',
-    marca: 'SafeBreath',
-    estado: 'Disponible',
-    categoria: 'Protección',
-    stock: 1000,
-    precio: '$2.50',
-    fechaCaducidad: '31/12/2025',
-  },
-];
-
-const workspacesColumns = [
-  {
-    header: 'Nombre del Producto',
-    accessorKey: 'nombreProducto',
-    meta: {
-      align: 'text-left',
-    },
-  },
-  {
-    header: 'Marca',
-    accessorKey: 'marca',
-    meta: {
-      align: 'text-left',
-    },
-  },
-  {
-    header: 'Estado',
-    accessorKey: 'estado',
-    meta: {
-      align: 'text-left',
-    },
-    cell: ({ row }) => (
-      <Badge color={row.original.estado === 'Disponible' ? 'green' : 'red'}>
-        {row.original.estado}
-      </Badge>
-    ),
-  },
-  {
-    header: 'Categoría',
-    accessorKey: 'categoria',
-    meta: {
-      align: 'text-left',
-    },
-  },
-  {
-    header: 'Stock',
-    accessorKey: 'stock',
-    meta: {
-      align: 'text-right',
-    },
-  },
-  {
-    header: 'Precio',
-    accessorKey: 'precio',
-    meta: {
-      align: 'text-right',
-    },
-  },
-  {
-    header: 'Fecha de Caducidad',
-    accessorKey: 'fechaCaducidad',
-    meta: {
-      align: 'text-right',
-    },
-  },
-];
-
-const PaginationButton = ({ onClick, disabled, children }) => {
-  return (
-    <button
-      type="button"
-      className="group px-2.5 py-2 text-tremor-default disabled:cursor-not-allowed disabled:opacity-50"
-      onClick={onClick}
-      disabled={disabled}
-    >
-      {children}
-    </button>
-  );
-};
+const API_URL = 'http://localhost:3000/productos';
+const REGISTRO_URL = 'http://localhost:3000/registro';
 
 export default function ListProduct() {
-  const [workspaces, setWorkspaces] = useState(initialWorkspaces);
+  const [products, setProducts] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingProduct, setEditingProduct] = useState(null);
   const [newProduct, setNewProduct] = useState({
-    nombreProducto: '',
+    nombre: '',
     marca: '',
-    estado: 'Disponible',
-    categoria: '',
+    precio: 0,
+    cantidadVendida: 0,
     stock: 0,
-    precio: '',
-    fechaCaducidad: '',
+    descripcion: '',
+    fechaVencimiento: '',
+    categoria: '',
   });
 
   const pageSize = 8;
 
-  const data = useMemo(() => workspaces, [workspaces]);
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
+  const fetchProducts = async () => {
+    try {
+      const response = await fetch(API_URL);
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const data = await response.json();
+      setProducts(data);
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  const createProduct = async (product) => {
+    try {
+      const response = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product),
+      });
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      const newProduct = await response.json();
+      setProducts(prevProducts => [...prevProducts, newProduct]);
+      await sendRegistration(`se creó el producto ${newProduct.nombre}`);
+    } catch (error) {
+      console.error('Error creating product:', error);
+    }
+  };
+
+  const updateProduct = async (product) => {
+    try {
+      // Buscar el producto original antes de actualizar
+      const originalProduct = products.find(p => p.id === product.id);
+
+      if (!originalProduct) {
+        throw new Error('Producto original no encontrado');
+      }
+
+      // Identificar los atributos modificados
+      const changedAttributes = Object.keys(product)
+        .filter(key => product[key] !== originalProduct[key])
+        .map(key => `${key}: "${originalProduct[key]}" → "${product[key]}"`);
+
+      if (changedAttributes.length === 0) {
+        console.log('No se realizaron cambios en el producto');
+        return;
+      }
+
+      const response = await fetch(`${API_URL}/${product.id}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(product),
+      });
+
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+
+      const updatedProduct = await response.json();
+
+      setProducts(prevProducts =>
+        prevProducts.map(p => (p.id === updatedProduct.id ? updatedProduct : p))
+      );
+
+      // Crear el mensaje detallado de los cambios
+      const changesMessage = changedAttributes.join(', ');
+      await sendRegistration(
+        `Se modificó el producto ${updatedProduct.nombre} => Cambios: ${changesMessage}`
+      );
+    } catch (error) {
+      console.error('Error updating product:', error);
+    }
+  };
+
+  const sendRegistration = async (motivo) => {
+    try {
+      const now = new Date();
+      const registro = {
+        fecha: now.toISOString().split('T')[0],
+        hora: now.toTimeString().split(' ')[0].slice(0, 5),
+        motivo: motivo
+      };
+      const response = await fetch(REGISTRO_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registro),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to send registration');
+      }
+    } catch (error) {
+      console.error('Error sending registration:', error);
+    }
+  };
+
+  const workspacesColumns = [
+    {
+      header: 'Nombre del Producto',
+      accessorKey: 'nombre',
+      meta: {
+        align: 'text-left',
+      },
+    },
+    {
+      header: 'Marca',
+      accessorKey: 'marca',
+      meta: {
+        align: 'text-left',
+      },
+    },
+    {
+      header: 'Categoría',
+      accessorKey: 'categoria',
+      meta: {
+        align: 'text-left',
+      },
+    },
+    {
+      header: 'Stock',
+      accessorKey: 'stock',
+      meta: {
+        align: 'text-right',
+      },
+    },
+    {
+      header: 'Cantidad Vendida',
+      accessorKey: 'cantidadVendida',
+      meta: {
+        align: 'text-right',
+      },
+    },
+    {
+      header: 'Precio',
+      accessorKey: 'precio',
+      meta: {
+        align: 'text-right',
+      },
+      cell: ({ row }) => `$${row.original.precio.toLocaleString()}`,
+    },
+    {
+      header: 'Fecha de Caducidad',
+      accessorKey: 'fechaVencimiento',
+      meta: {
+        align: 'text-right',
+      },
+    },
+    {
+      header: 'Acciones',
+      accessorKey: 'actions',
+      meta: {
+        align: 'text-center',
+      },
+      cell: ({ row }) => (
+        <Button
+          icon={RiEditLine}
+          variant="light"
+          onClick={() => handleEdit(row.original)}
+        >
+          Editar
+        </Button>
+      ),
+    },
+  ];
+
+  const data = useMemo(() => products, [products]);
 
   const table = useReactTable({
     data,
@@ -192,19 +245,52 @@ export default function ListProduct() {
     setNewProduct(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleNumberInputChange = (name, value) => {
+    setNewProduct(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setWorkspaces(prev => [...prev, newProduct]);
+    if (editingProduct) {
+      await updateProduct({ ...newProduct, id: editingProduct.id });
+    } else {
+      await createProduct(newProduct);
+    }
+    resetForm();
+  };
+
+  const handleEdit = (product) => {
+    setEditingProduct(product);
+    setNewProduct(product);
+    setIsModalOpen(true);
+  };
+
+  const resetForm = () => {
     setNewProduct({
-      nombreProducto: '',
+      nombre: '',
       marca: '',
-      estado: 'Disponible',
-      categoria: '',
+      precio: 0,
+      cantidadVendida: 0,
       stock: 0,
-      precio: '',
-      fechaCaducidad: '',
+      descripcion: '',
+      fechaVencimiento: '',
+      categoria: '',
     });
+    setEditingProduct(null);
     setIsModalOpen(false);
+  };
+
+  const PaginationButton = ({ onClick, disabled, children }) => {
+    return (
+      <button
+        type="button"
+        className="group px-2.5 py-2 text-tremor-default disabled:cursor-not-allowed disabled:opacity-50"
+        onClick={onClick}
+        disabled={disabled}
+      >
+        {children}
+      </button>
+    );
   };
 
   return (
@@ -219,7 +305,10 @@ export default function ListProduct() {
         <Button
           icon={RiAddLine}
           className="mt-4 w-full sm:mt-0 sm:w-auto"
-          onClick={() => setIsModalOpen(true)}
+          onClick={() => {
+            resetForm();
+            setIsModalOpen(true);
+          }}
         >
           Crear Nuevo Producto
         </Button>
@@ -305,11 +394,11 @@ export default function ListProduct() {
         <div className="fixed inset-0 z-50 overflow-y-auto bg-black bg-opacity-50 flex justify-center items-center">
           <Card className="w-full max-w-2xl mx-auto">
             <div className="flex justify-between items-center mb-4">
-              <Title>Crear Nuevo Producto</Title>
+              <Title>{editingProduct ? 'Editar Producto' : 'Crear Nuevo Producto'}</Title>
               <Button
                 variant="light"
                 icon={RiCloseLine}
-                onClick={() => setIsModalOpen(false)}
+                onClick={resetForm}
                 className="p-1"
               >
                 <span className="sr-only">Cerrar</span>
@@ -318,9 +407,9 @@ export default function ListProduct() {
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <TextInput
-                  name="nombreProducto"
+                  name="nombre"
                   placeholder="Nombre del Producto"
-                  value={newProduct.nombreProducto}
+                  value={newProduct.nombre}
                   onChange={handleInputChange}
                   required
                 />
@@ -331,15 +420,6 @@ export default function ListProduct() {
                   onChange={handleInputChange}
                   required
                 />
-                <Select
-                  name="estado"
-                  placeholder="Estado"
-                  value={newProduct.estado}
-                  onValueChange={(value) => setNewProduct(prev => ({ ...prev, estado: value }))}
-                >
-                  <SelectItem value="Disponible">Disponible</SelectItem>
-                  <SelectItem value="Agotado">Agotado</SelectItem>
-                </Select>
                 <TextInput
                   name="categoria"
                   placeholder="Categoría"
@@ -351,31 +431,47 @@ export default function ListProduct() {
                   name="stock"
                   placeholder="Stock"
                   value={newProduct.stock}
-                  onValueChange={(value) => setNewProduct(prev => ({ ...prev, stock: value }))}
+                  onValueChange={(value) => handleNumberInputChange('stock', value)}
+                  min={0}
+                  required
+                />
+                <NumberInput
+                  name="cantidadVendida"
+                  placeholder="Cantidad Vendida"
+                  value={newProduct.cantidadVendida}
+                  onValueChange={(value) => handleNumberInputChange('cantidadVendida', value)}
+                  min={0}
+                  required
+                />
+                <NumberInput
+                  name="precio"
+                  placeholder="Precio"
+                  value={newProduct.precio}
+                  onValueChange={(value) => handleNumberInputChange('precio', value)}
                   min={0}
                   required
                 />
                 <TextInput
-                  name="precio"
-                  placeholder="Precio (ej. $5.50)"
-                  value={newProduct.precio}
+                  name="fechaVencimiento"
+                  type="date"
+                  value={newProduct.fechaVencimiento}
                   onChange={handleInputChange}
                   required
                 />
                 <TextInput
-                  name="fechaCaducidad"
-                  placeholder="Fecha de Caducidad (ej. 23/09/2025)"
-                  value={newProduct.fechaCaducidad}
+                  name="descripcion"
+                  placeholder="Descripción"
+                  value={newProduct.descripcion}
                   onChange={handleInputChange}
                   required
                 />
               </div>
               <div className="flex justify-end space-x-2 mt-6">
-                <Button variant="secondary" onClick={() => setIsModalOpen(false)}>
+                <Button variant="secondary" onClick={resetForm}>
                   Cancelar
                 </Button>
                 <Button type="submit">
-                  Crear Producto
+                  {editingProduct ? 'Guardar Cambios' : 'Crear Producto'}
                 </Button>
               </div>
             </form>

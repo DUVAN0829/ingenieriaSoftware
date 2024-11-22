@@ -1,126 +1,90 @@
-// 'use client';
+'use client';
 
 import { AreaChart, Card, List, ListItem } from '@tremor/react';
-import React from 'react';
+import React, { useMemo } from 'react';
+
+const rawData = {
+  "enero": { "total_vendido": 1200, "ingresos": 45900, "margen_beneficio": 45 },
+  "febrero": { "total_vendido": 1100, "ingresos": 42100, "margen_beneficio": 40 },
+  "marzo": { "total_vendido": 1300, "ingresos": 50000, "margen_beneficio": 48 },
+  "abril": { "total_vendido": 1250, "ingresos": 47000, "margen_beneficio": 46 },
+  "mayo": { "total_vendido": 1400, "ingresos": 52000, "margen_beneficio": 50 },
+  "junio": { "total_vendido": 1350, "ingresos": 51000, "margen_beneficio": 47 },
+  "julio": { "total_vendido": 1200, "ingresos": 46000, "margen_beneficio": 44 },
+  "agosto": { "total_vendido": 1250, "ingresos": 47500, "margen_beneficio": 45 },
+  "septiembre": { "total_vendido": 1300, "ingresos": 49500, "margen_beneficio": 48 },
+  "octubre": { "total_vendido": 1400, "ingresos": 52000, "margen_beneficio": 50 },
+  "noviembre": { "total_vendido": 1450, "ingresos": 54000, "margen_beneficio": 52 },
+  "diciembre": { "total_vendido": 1500, "ingresos": 56000, "margen_beneficio": 55 }
+};
 
 function classNames(...classes) {
   return classes.filter(Boolean).join(' ');
 }
 
-const data = [
-  {
-    date: 'Jan 23',
-    Ingresos: 232,
-  },
-  {
-    date: 'Feb 23',
-    Ingresos: 241,
-  },
-  {
-    date: 'Mar 23',
-    Ingresos: 291,
-  },
-  {
-    date: 'Apr 23',
-    Ingresos: 101,
-  },
-  {
-    date: 'May 23',
-    Ingresos: 318,
-  },
-  {
-    date: 'Jun 23',
-    Ingresos: 205,
-  },
-  {
-    date: 'Jul 23',
-    Ingresos: 372,
-  },
-  {
-    date: 'Aug 23',
-    Ingresos: 341,
-  },
-  {
-    date: 'Sep 23',
-    Ingresos: 387,
-  
-  },
-  {
-    date: 'Oct 23',
-    Ingresos: 220,
-  },
-  {
-    date: 'Nov 23',
-    Ingresos: 372,
-  },
-  {
-    date: 'Dec 23',
-    Ingresos: 321,
-  },
-];
-
-const summary = [
-  {
-    name: 'Ingresos',
-    value: 3273,
-  },
-];
-
-
-
-const valueFormatter = (number) =>
-  `$${Intl.NumberFormat('us').format(number).toString()}`;
+const valueFormatter = (number) => 
+  new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(number);
 
 const statusColor = {
   Ingresos: 'bg-blue-500',
- 
 };
 
-
-
-
 export default function IncomeVentas() {
+  const data = useMemo(() => {
+    return Object.entries(rawData).map(([month, values]) => ({
+      mes: month,
+      Ingresos: values.ingresos,
+    }));
+  }, []);
+
+  const totalIncome = useMemo(() => {
+    return Object.values(rawData).reduce((sum, month) => sum + month.ingresos, 0);
+  }, []);
+
+  const summary = [
+    {
+      name: 'Ingresos',
+      value: totalIncome,
+    },
+  ];
+
   return (
-    <>
-      <Card className="sm:mx-auto h-full  sm:max-w-lg bg-slate-50 shadow-xl">
-        <h3 className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-          Ingreso Mensuales
-        </h3>
-        <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
-          Ingreso mensuales de los productos.
-        </p>
-        <AreaChart
-          data={data}
-          index="date"
-          categories={['Ingresos', 'Sponsored']}
-          colors={['blue', 'violet']}
-          valueFormatter={valueFormatter}
-          showLegend={false}
-          showYAxis={false}
-          showGradient={false}
-          startEndOnly={false}
-          className="mt-6 h-32"
-        />
-        <List className="mt-2">
-          {summary.map((item) => (
-            <ListItem key={item.name}>
-              <div className="flex items-center space-x-2">
-                <span
-                  className={classNames(statusColor[item.name], 'h-0.5 w-3')}
-                  aria-hidden={true}
-                />
-                <span>{item.name}</span>
-              </div>
-              <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                {valueFormatter(item.value)}
-              </span>
-            </ListItem>
-          ))}
-        </List>
-      </Card>
-    </>
+    <Card className="bg-slate-50 shadow-xl">
+      <h3 className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+        Ingresos Mensuales
+      </h3>
+      <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+        Ingresos mensuales de los productos durante el año.
+      </p>
+      <AreaChart
+        data={data}
+        index="mes"
+        categories={['Ingresos']}
+        colors={['blue']}
+        valueFormatter={valueFormatter}
+        showLegend={false}
+        showYAxis={true}
+        showGradient={true}
+        startEndOnly={true}
+        className="mt-6 h-64"
+      />
+      <List className="mt-4">
+        {summary.map((item) => (
+          <ListItem key={item.name}>
+            <div className="flex items-center space-x-2">
+              <span
+                className={classNames(statusColor[item.name], 'h-0.5 w-3')}
+                aria-hidden={true}
+              />
+              <span>{item.name}</span>
+            </div>
+            <span className="font-medium text-tremor-content-strong dark:text-dark-tremor-content-strong">
+              {valueFormatter(item.value)}
+            </span>
+          </ListItem>
+        ))}
+      </List>
+    </Card>
   );
 }
-
-
 

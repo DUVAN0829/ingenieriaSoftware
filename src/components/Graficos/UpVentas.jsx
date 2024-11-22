@@ -1,130 +1,55 @@
-// 'use client';
+'use client';
 
 import { useState } from 'react';
 import { BarChart, Card, Divider, Switch } from '@tremor/react';
 
 const data = [
-  {
-    date: 'Jan 23',
-    'This Year': 68560,
-    'Last Year': 28560,
-  },
-  {
-    date: 'Feb 23',
-    'This Year': 70320,
-    'Last Year': 30320,
-  },
-  {
-    date: 'Mar 23',
-    'This Year': 80233,
-    'Last Year': 70233,
-  },
-  {
-    date: 'Apr 23',
-    'This Year': 55123,
-    'Last Year': 45123,
-  },
-  {
-    date: 'May 23',
-    'This Year': 56000,
-    'Last Year': 80600,
-  },
-  {
-    date: 'Jun 23',
-    'This Year': 100000,
-    'Last Year': 85390,
-  },
-  {
-    date: 'Jul 23',
-    'This Year': 85390,
-    'Last Year': 45340,
-  },
-  {
-    date: 'Aug 23',
-    'This Year': 80100,
-    'Last Year': 70120,
-  },
-  {
-    date: 'Sep 23',
-    'This Year': 75090,
-    'Last Year': 69450,
-  },
-  {
-    date: 'Oct 23',
-    'This Year': 71080,
-    'Last Year': 63345,
-  },
-  {
-    date: 'Nov 23',
-    'This Year': 61210,
-    'Last Year': 100330,
-  },
-  {
-    date: 'Dec 23',
-    'This Year': 60143,
-    'Last Year': 45321,
-  },
+  { mes: 'enero', ingresos: 45900, total_vendido: 1200 },
+  { mes: 'febrero', ingresos: 42100, total_vendido: 1100 },
+  { mes: 'marzo', ingresos: 50000, total_vendido: 1300 },
+  { mes: 'abril', ingresos: 47000, total_vendido: 1250 },
+  { mes: 'mayo', ingresos: 52000, total_vendido: 1400 },
+  { mes: 'junio', ingresos: 51000, total_vendido: 1350 },
+  { mes: 'julio', ingresos: 46000, total_vendido: 1200 },
+  { mes: 'agosto', ingresos: 47500, total_vendido: 1250 },
+  { mes: 'septiembre', ingresos: 49500, total_vendido: 1300 },
+  { mes: 'octubre', ingresos: 52000, total_vendido: 1400 },
+  { mes: 'noviembre', ingresos: 54000, total_vendido: 1450 },
+  { mes: 'diciembre', ingresos: 56000, total_vendido: 1500 },
 ];
 
 function valueFormatter(number) {
-  const formatter = new Intl.NumberFormat('en-US', {
-    maximumFractionDigits: 0,
-    notation: 'compact',
-    compactDisplay: 'short',
+  return new Intl.NumberFormat('es-ES', {
     style: 'currency',
-    currency: 'USD',
-  });
-
-  return formatter.format(number);
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number);
 }
 
 export default function UpVentas() {
   const [showComparison, setShowComparison] = useState(false);
+
   return (
     <div>
-      <Card className='bg-slate-50 shadow-xl'>
+      <Card className="bg-slate-50 shadow-xl">
         <h3 className="mr-1 font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-          Productos más vendidos.
+          Productos más vendidos
         </h3>
         <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
-          Productos más vendidos en el ultimo y actual año.
+          Ingresos y total vendido por mes en el año actual
         </p>
         <BarChart
           data={data}
-          index="date"
-          categories={
-            showComparison ? ['Last Year', 'This Year'] : ['This Year']
-          }
-          colors={showComparison ? ['cyan', 'green'] : ['green']}
+          index="mes"
+          categories={showComparison ? ['ingresos', 'total_vendido'] : ['ingresos']}
+          colors={showComparison ? ['green', 'blue'] : ['green']}
           valueFormatter={valueFormatter}
-          yAxisWidth={50}
-          className="mt-6 hidden h-60 sm:block"
+          yAxisWidth={80}
+          className="mt-6 h-80"
         />
-        <BarChart
-          data={data}
-          index="date"
-          categories={
-            showComparison ? ['Last Year', 'This Year'] : ['This Year']
-          }
-          colors={showComparison ? ['cyan', 'blue'] : ['blue']}
-          valueFormatter={valueFormatter}
-          showYAxis={false}
-          className="mt-4 h-56 sm:hidden"
-        />
-        <Divider />
-        <div className="mb-2 flex items-center space-x-3">
-          <Switch
-            id="comparison"
-            onChange={() => setShowComparison(!showComparison)}
-          />
-          <label
-            htmlFor="comparison"
-            className="text-tremor-default text-tremor-content dark:text-dark-tremor-content"
-          >
-            Mostrar el mismo periodo en ambos años.
-          </label>
-        </div>
       </Card>
     </div>
   );
 }
+

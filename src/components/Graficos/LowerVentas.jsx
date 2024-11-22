@@ -1,130 +1,67 @@
-// 'use client';
+'use client';
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { BarChart, Card, Divider, Switch } from '@tremor/react';
 
-const data = [
-    {
-        date: 'Jan 23',
-        'This Year': 68560,
-        'Last Year': 28560,
-    },
-    {
-        date: 'Feb 23',
-        'This Year': 70320,
-        'Last Year': 30320,
-    },
-    {
-        date: 'Mar 23',
-        'This Year': 80233,
-        'Last Year': 70233,
-    },
-    {
-        date: 'Apr 23',
-        'This Year': 55123,
-        'Last Year': 45123,
-    },
-    {
-        date: 'May 23',
-        'This Year': 56000,
-        'Last Year': 80600,
-    },
-    {
-        date: 'Jun 23',
-        'This Year': 100000,
-        'Last Year': 85390,
-    },
-    {
-        date: 'Jul 23',
-        'This Year': 85390,
-        'Last Year': 45340,
-    },
-    {
-        date: 'Aug 23',
-        'This Year': 80100,
-        'Last Year': 70120,
-    },
-    {
-        date: 'Sep 23',
-        'This Year': 75090,
-        'Last Year': 69450,
-    },
-    {
-        date: 'Oct 23',
-        'This Year': 71080,
-        'Last Year': 63345,
-    },
-    {
-        date: 'Nov 23',
-        'This Year': 61210,
-        'Last Year': 100330,
-    },
-    {
-        date: 'Dec 23',
-        'This Year': 60143,
-        'Last Year': 45321,
-    },
-];
+const rawData = {
+  "enero": { "total_vendido": 1200, "ingresos": 45900, "margen_beneficio": 45 },
+  "febrero": { "total_vendido": 1100, "ingresos": 42100, "margen_beneficio": 40 },
+  "marzo": { "total_vendido": 1300, "ingresos": 50000, "margen_beneficio": 48 },
+  "abril": { "total_vendido": 1250, "ingresos": 47000, "margen_beneficio": 46 },
+  "mayo": { "total_vendido": 1400, "ingresos": 52000, "margen_beneficio": 50 },
+  "junio": { "total_vendido": 1350, "ingresos": 51000, "margen_beneficio": 47 },
+  "julio": { "total_vendido": 1200, "ingresos": 46000, "margen_beneficio": 44 },
+  "agosto": { "total_vendido": 1250, "ingresos": 47500, "margen_beneficio": 45 },
+  "septiembre": { "total_vendido": 1300, "ingresos": 49500, "margen_beneficio": 48 },
+  "octubre": { "total_vendido": 1400, "ingresos": 52000, "margen_beneficio": 50 },
+  "noviembre": { "total_vendido": 1450, "ingresos": 54000, "margen_beneficio": 52 },
+  "diciembre": { "total_vendido": 1500, "ingresos": 56000, "margen_beneficio": 55 }
+};
 
 function valueFormatter(number) {
-    const formatter = new Intl.NumberFormat('en-US', {
-        maximumFractionDigits: 0,
-        notation: 'compact',
-        compactDisplay: 'short',
-        style: 'currency',
-        currency: 'USD',
-    });
-
-    return formatter.format(number);
+  return new Intl.NumberFormat('es-ES', {
+    style: 'currency',
+    currency: 'EUR',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0,
+  }).format(number);
 }
 
 export default function LowerVentas() {
-    const [showComparison, setShowComparison] = useState(false);
-    return (
-        <div>
-            <Card className='bg-slate-50'>
-                <h3 className="mr-1 font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
-                    Productos menos vendidos.
-                </h3>
-                <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
-                    Productos menos vendidos en el último y actual año.
-                </p>
-                <BarChart
-                    data={data}
-                    index="date"
-                    categories={
-                        showComparison ? ['Last Year', 'This Year'] : ['This Year']
-                    }
-                    colors={showComparison ? ['indigo', 'red'] : ['red']}
-                    valueFormatter={valueFormatter}
-                    yAxisWidth={50}
-                    className="mt-6 hidden h-60 sm:block"
-                />
-                <BarChart
-                    data={data}
-                    index="date"
-                    categories={
-                        showComparison ? ['Last Year', 'This Year'] : ['This Year']
-                    }
-                    colors={showComparison ? ['cyan', 'blue'] : ['blue']}
-                    valueFormatter={valueFormatter}
-                    showYAxis={false}
-                    className="mt-4 h-56 sm:hidden"
-                />
-                <Divider />
-                <div className="mb-2 flex items-center space-x-3">
-                    <Switch
-                        id="comparison"
-                        onChange={() => setShowComparison(!showComparison)}
-                    />
-                    <label
-                        htmlFor="comparison"
-                        className="text-tremor-default text-tremor-content dark:text-dark-tremor-content"
-                    >
-                        Mostrar el mismo periodo en ambos años.
-                    </label>
-                </div>
-            </Card>
-        </div>
-    );
+  const [showComparison, setShowComparison] = useState(false);
+
+  const data = useMemo(() => {
+    const sortedData = Object.entries(rawData)
+      .sort(([, a], [, b]) => a.total_vendido - b.total_vendido)
+      .slice(0, 6)
+      .map(([mes, valores]) => ({
+        mes,
+        total_vendido: valores.total_vendido,
+        ingresos: valores.ingresos
+      }));
+    return sortedData;
+  }, []);
+
+  return (
+    <div>
+      <Card className="bg-slate-50 shadow-xl">
+        <h3 className="mr-1 font-semibold text-tremor-content-strong dark:text-dark-tremor-content-strong">
+          Productos menos vendidos
+        </h3>
+        <p className="text-tremor-default text-tremor-content dark:text-dark-tremor-content">
+          Los 6 meses con menos ventas en el año actual
+        </p>
+        <BarChart
+          data={data}
+          index="mes"
+          categories={showComparison ? ['total_vendido', 'ingresos'] : ['total_vendido']}
+          colors={showComparison ? ['red', 'yellow'] : ['red']}
+          valueFormatter={valueFormatter}
+          yAxisWidth={80}
+          className="mt-6 h-80"
+        />
+      </Card>
+    </div>
+  );
 }
+

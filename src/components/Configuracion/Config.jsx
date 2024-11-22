@@ -1,6 +1,10 @@
+import Navegacion from "../navegacion/Navegacion";
+
 const Configuracion = () => {
     return (
-        <h1>Configuracion</h1>
+        <div>
+            <Navegacion/>
+        </div>
     )
 }
  
