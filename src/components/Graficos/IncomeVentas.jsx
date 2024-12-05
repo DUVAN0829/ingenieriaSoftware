@@ -68,7 +68,7 @@ export default function IncomeVentas() {
         startEndOnly={true}
         className="mt-6 h-64"
       />
-      <List className="mt-4">
+      <List className="mt-4 pt-2">
         {summary.map((item) => (
           <ListItem key={item.name}>
             <div className="flex items-center space-x-2">

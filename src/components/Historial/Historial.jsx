@@ -36,19 +36,20 @@ const Historial = () => {
     }
 
     return (
+        
         <div className="flex">
             <Navegacion />
 
-            <section className="flex justify-center w-11/12">
+            <section className="flex-1 m-4 ml-64"> {/* Cambié justify-center a flex-1 para que ocupe todo el espacio */}
                 <section className="p-6">
                     <h1 className="text-2xl font-bold mb-4 text-center">Historial de Registros</h1>
                     <div className="overflow-x-auto">
                         <table className="min-w-full bg-white border border-gray-200 shadow-md rounded-lg">
-                            <thead className="bg-gray-100">
+                            <thead className="bg-slate-800">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b">Fecha</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b">Hora</th>
-                                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-600 border-b">Motivo</th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-200 border-b">Fecha</th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-200 border-b">Hora</th>
+                                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-200 border-b">Motivo</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -65,6 +66,7 @@ const Historial = () => {
                 </section>
             </section>
         </div>
+
     );
 };
 

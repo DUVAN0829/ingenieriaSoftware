@@ -7,12 +7,9 @@ const Inventario = () => {
 
             <Navegacion />
 
-            <section className="flex-1 m-4">
-
-                <section>
-                    <h1 className="font-extrabold text-2xl">Inventario</h1>
-                </section>
-
+            {/* Agregamos margin-left para evitar que el contenido se sobreponga */}
+            <section className="flex-1 m-4 ml-64">
+                
                 <section className="mt-4 mx-10">
                     <LisProduct />
                 </section>

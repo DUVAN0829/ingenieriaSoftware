@@ -1,11 +1,23 @@
 import Navegacion from "../navegacion/Navegacion";
+import { useAuth } from "../../context/AuthContext";
 
-const Configuracion = () => {
+const Config = () => {
+
+    const { user, logout } = useAuth()
+
+    const hanldeLogout = async () => {
+        await logout()
+    }
+
     return (
         <div>
-            <Navegacion/>
+            <Navegacion />
+
+            <section className="flex justify-center">
+                <button onClick={hanldeLogout} >Salir</button>
+            </section>
         </div>
     )
 }
- 
-export default Configuracion;
+
+export default Config;

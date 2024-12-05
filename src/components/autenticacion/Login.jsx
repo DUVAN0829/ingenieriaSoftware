@@ -57,17 +57,17 @@ export default function Login() {
 
         <div className="flex justify-center items-center h-screen">
 
+
             <section>
-                <h1 className="font-extrabold text-center text-2xl">Iniciar Sesión</h1>
+                <h1 className="font-extrabold text-center text-2xl">Iniciar sesión</h1>
 
                 <form
                     className="border-gray-500 p-8 bg-opacity-20 flex flex-col gap-y-4 rounded-lg mt-5 mb-14 shadow-xl"
                     onSubmit={handleSubmit}>
 
-                    <legend className="text-center font-bold"> Formulario </legend>
+                    <div className="flex justify-between">
+                        <label htmlFor="email" className="font-bold text-left"> Email </label>
 
-                    <div>
-                        <label htmlFor="email" className="font-bold"> Email </label>
                         <input
                             className="text-black pl-3 rounded-md ml-2"
                             id="email"
@@ -77,7 +77,7 @@ export default function Login() {
                             onChange={handleChange} />
                     </div>
 
-                    <div>
+                    <div className="flex justify-between mb-5">
                         <label htmlFor="password" className="font-bold"> Password </label>
                         <input
                             className="text-black pl-3 rounded-md ml-2"
@@ -93,7 +93,7 @@ export default function Login() {
                         type="submit"
                         value="Login" />
 
-                    <NavLink to={'/register'} className="font-medium text-blue-600 hover:text-blue-800 transition-all ease-in duration-200">Registrarse</NavLink>
+                    <NavLink to={'/register'} className="font-medium text-blue-600 hover:text-blue-800 transition-all ease-in duration-200 text-center">Registrarse</NavLink>
 
                 </form>
 

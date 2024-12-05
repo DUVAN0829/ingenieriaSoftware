@@ -6,7 +6,7 @@ import Resgister from "./components/autenticacion/Resgister"
 import { AuthProvider } from "./context/AuthContext"
 import ProtectedRoute from "./components/navegacion/ProtectedRoute"
 import Historial from "./components/Historial/Historial"
-import Configuracion from "./components/Configuracion/Config"
+import Config from "./components/Configuracion/Config"
 import Inventario from "./components/Inventario/Inventario"
 
 function App() {
@@ -24,11 +24,11 @@ function App() {
 
           <Route path="/login" element={<Login />} />
 
-          <Route path="/inventario" element={<Inventario/>} />
+          <Route path="/inventario" element={<ProtectedRoute> <Inventario /> </ProtectedRoute>} />
 
-          <Route path="/historial" element={<Historial />} />
+          <Route path="/historial" element={<ProtectedRoute> <Historial /> </ProtectedRoute>} />
 
-          <Route path="/configuracion" element={<Configuracion />} />
+          <Route path="/configuracion" element={<ProtectedRoute> <Config /> </ProtectedRoute>} />
 
         </Routes>
       </AuthProvider>

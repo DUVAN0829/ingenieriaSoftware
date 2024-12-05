@@ -78,16 +78,16 @@ export default function TrendVentas() {
         categories={rawData.map(product => product.nombre)}
         colors={['blue', 'violet', 'fuchsia']}
         valueFormatter={valueFormatter}
-        showLegend={false}
+        showLegend={true}
         showYAxis={true}
         yAxisWidth={50}
         minValue={150}
         maxValue={350}
         showAnimation={true}
-        curveType="monotone"
+        curveType="natural"
         className="mt-6 h-80"
       />
-      <List className="mt-4">
+      {/* <List className="mt-4">
         {summary.map((item) => (
           <ListItem key={item.name}>
             <div className="flex items-center space-x-2">
@@ -102,7 +102,7 @@ export default function TrendVentas() {
             </span>
           </ListItem>
         ))}
-      </List>
+      </List> */}
     </Card>
   );
 }
